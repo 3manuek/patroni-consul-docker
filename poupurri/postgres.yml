@@ -1,0 +1,45 @@
+dcs_api: 'consul://{{ consul_ilb_ip }}:8500'
+namespace: /service/
+scope: {{ patroni_scope }}
+name: {{ patroni_node_name }}
+
+restapi:
+  listen: 127.0.0.1:8008    # we want this to be accessed locally only
+
+consul:
+  host: {{ consul_ilb_ip }}
+  port: 8500
+
+# TODO: tweak this from playbook
+# Ideally, we bootstrap here pg_hba conf and ident, although
+# we copy them over to teh data dir as we already generated this
+# in the postgres playbook.
+# Removed bootstrap for now as it wipes the current data_dir
+#bootstrap:
+#  dcs:
+#    ttl: 30
+#    loop_wait: 10
+#    retry_timeout: 10
+#    maximum_lag_on_failover: 1048576
+
+postgresql:
+  listen: 127.0.0.1:5432
+  connect_address: 127.0.0.1:5432
+  data_dir: {{ postgresql_data_directory }}
+  pgpass: /tmp/pgpass0
+  authentication:
+    superuser:
+      username: {{ postgresql_postgres_user }}
+      password: {{ postgresql_postgres_pass }}
+    replication:
+      username: {{ postgresql_replication_pass }}
+      password: {{ postgresql_replication_pass }}
+  parameters:
+    unix_socket_directories: '.'
+  custom_conf: {{ postgresql_conf_file }}
+
+tags:
+  nofailover: false
+  noloadbalance: false
+  clonefrom: false
+  nosync: false

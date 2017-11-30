@@ -109,12 +109,12 @@ consul:
 
 bootstrap:
   dcs:
-    postgresql:
+    postgresql:``
       use_pg_rewind: true
 
   pg_hba:
-  - host all all 0.0.0.0/0 md5
-  - host replication replicator ${DOCKER_IP}/16    md5
+  - host all all 0.0.0.0/0 trust
+  - host replication replicator ${DOCKER_IP}/16    trust
 __EOF__
 
 mkdir -p "$HOME/.config/patroni"
