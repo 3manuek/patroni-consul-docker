@@ -5,7 +5,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && echo 'APT::Install-Recommends "0";\nAPT::Install-Suggests "0";' > /etc/apt/apt.conf.d/01norecommend \
     && apt-get update -y \
     && apt-get upgrade -y \
-    && apt-get install -y curl jq haproxy python-psycopg2 python-yaml python-requests python-six python-pysocks \
+    && apt-get install -y curl jq haproxy python-psycopg2 python-yaml python-requests python-six \
         python-dateutil python-pip python-setuptools python-prettytable python-wheel python-psutil python locales \
     ## Make sure we have a en_US.UTF-8 locale available
     && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 \
@@ -17,6 +17,10 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get autoremove -y \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/* /root/.cache
+
+# pysocks is given me error as a non-existent package, although available
+# per https://packages.debian.org/stretch/python-socks 
+RUN pip install pysocks
 
 ENV CONFDVERSION 0.11.0
 RUN curl -L https://github.com/kelseyhightower/confd/releases/download/v${CONFDVERSION}/confd-${CONFDVERSION}-linux-amd64 > /usr/local/bin/confd \

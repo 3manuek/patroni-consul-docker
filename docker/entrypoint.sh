@@ -44,9 +44,9 @@ while getopts "$optspec" optchar; do
                         exec $CONFD etcd -node $PATRONI_ETCD_HOST
                     fi
                     ;;
-                etcd)
-                    exec etcd $ETCD_ARGS
-                    ;;
+                #etcd)
+                #    exec etcd $ETCD_ARGS
+                #    ;;
                 zookeeper)
                     exec /usr/share/zookeeper/bin/zkServer.sh start-foreground
                     ;;
@@ -74,10 +74,10 @@ while getopts "$optspec" optchar; do
 done
 
 ## We start an etcd
-if [[ -z ${PATRONI_ETCD_HOST} && -z ${PATRONI_ZOOKEEPER_HOSTS} ]]; then
-    etcd $ETCD_ARGS > /var/log/etcd.log 2> /var/log/etcd.err &
-    export PATRONI_ETCD_HOST="127.0.0.1:2379"
-fi
+#if [[ -z ${PATRONI_ETCD_HOST} && -z ${PATRONI_ZOOKEEPER_HOSTS} ]]; then
+#    etcd $ETCD_ARGS > /var/log/etcd.log 2> /var/log/etcd.err &
+#    export PATRONI_ETCD_HOST="127.0.0.1:2379"
+#fi
 
 export PATRONI_SCOPE
 export PATRONI_NAME="${PATRONI_NAME:-${HOSTNAME}}"
