@@ -5,7 +5,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && echo 'APT::Install-Recommends "0";\nAPT::Install-Suggests "0";' > /etc/apt/apt.conf.d/01norecommend \
     && apt-get update -y \
     && apt-get upgrade -y \
-    && apt-get install -y curl jq haproxy python-psycopg2 python-yaml python-requests python-six python-socks \
+    && apt-get install -y curl jq haproxy python-psycopg2 git python-yaml python-requests python-six python-socks \
         python-dateutil python-pip python-setuptools python-prettytable python-wheel python-psutil python locales \
     ## Make sure we have a en_US.UTF-8 locale available
     && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 \
@@ -25,10 +25,12 @@ ENV CONFDVERSION 0.11.0
 RUN curl -L https://github.com/kelseyhightower/confd/releases/download/v${CONFDVERSION}/confd-${CONFDVERSION}-linux-amd64 > /usr/local/bin/confd \
     && chmod +x /usr/local/bin/confd
 
-ADD patronictl.py patroni.py docker/entrypoint.sh /
-ADD patroni /patroni/
+RUN git clone https://github.com/zalando/patroni.git
+
+ADD patroni/patronictl.py patroni/patroni.py patroni/docker/entrypoint.sh /
+ADD patroni/patroni /patroni/
 ADD extras/confd /etc/confd
-RUN ln -s /patronictl.py /usr/local/bin/patronictl
+RUN ln -s patroni/patronictl.py /usr/local/bin/patronictl
 
 
 ### Setting up a simple script that will serve as an entrypoint
