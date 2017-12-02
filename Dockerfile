@@ -25,12 +25,16 @@ ENV CONFDVERSION 0.11.0
 RUN curl -L https://github.com/kelseyhightower/confd/releases/download/v${CONFDVERSION}/confd-${CONFDVERSION}-linux-amd64 > /usr/local/bin/confd \
     && chmod +x /usr/local/bin/confd
 
-RUN git clone https://github.com/zalando/patroni.git
-
-ADD patroni/patronictl.py patroni/patroni.py patroni/docker/entrypoint.sh /
-ADD patroni/patroni /patroni/
-ADD extras/confd /etc/confd
-RUN ln -s patroni/patronictl.py /usr/local/bin/patronictl
+RUN git clone https://github.com/zalando/patroni.git patroniSource
+RUN cp patroniSource/patronictl.py /
+RUN cp patroniSource/patroni.py /
+ADD docker/entrypoint.sh /
+RUN cp -r patroniSource/patroni patroni/
+RUN cp -r patroniSource/extras/confd /etc/confd 
+#ADD patroni/patronictl.py patroni/patroni.py patroni/docker/entrypoint.sh /
+#ADD patroni/patroni /patroni/
+#ADD extras/confd /etc/confd
+RUN ln -s patronictl.py /usr/local/bin/patronictl
 
 
 ### Setting up a simple script that will serve as an entrypoint
