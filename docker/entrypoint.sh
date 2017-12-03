@@ -38,10 +38,10 @@ while getopts "$optspec" optchar; do
                         done
                         exec $CONFD zookeeper -node ${PATRONI_ZOOKEEPER_HOSTS}
                     else
-                        while ! curl -s ${PATRONI_ETCD_HOST}/v2/members | jq -r '.members[0].clientURLs[0]' | grep -q http; do
+                        while ! curl -s ${PATRONI_CONSUL_HOST}/v2/members | jq -r '.members[0].clientURLs[0]' | grep -q http; do
                             sleep 1
                         done
-                        exec $CONFD etcd -node $PATRONI_ETCD_HOST
+                        exec $CONFD etcd -node $PATRONI_CONSUL_HOST
                     fi
                     ;;
                 #etcd)
@@ -95,7 +95,7 @@ export PATRONI_SUPERUSER_PASSWORD="${PATRONI_SUPERUSER_PASSWORD:-postgres}"
 export PATRONI_POSTGRESQL_PGPASS="$HOME/.pgpass"
 
 cat > /patroni.yml <<__EOF__
-dcs_api: 'consul://{{ consul_ilb_ip }}:8500'
+dcs_api: 'consul://${PATRONI_CONSUL_HOST}'
 namespace: /service/
 scope: ${PATRONI_SCOPE}
 name: ${PATRONI_NAME}
@@ -104,12 +104,12 @@ restapi:
   listen: ${PATRONI_RESTAPI_LISTEN}    # we want this to be accessed locally only
 
 consul:
-  host: {{ consul_ilb_ip }}
+  host: ${PATRONI_CONSUL_HOST}
   port: 8500
 
 bootstrap:
   dcs:
-    postgresql:``
+    postgresql:
       use_pg_rewind: true
 
   pg_hba:
